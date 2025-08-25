@@ -94,4 +94,16 @@ router.delete("/:id", protectRoute, async (req, res) => {
 
 })
 
+router.get("/user", protectRoute, async (req, res) => {
+
+    try {
+        const books = await Book.find({ user: req.user._id }).sort({ createdAt: -1 });
+        res.json(books);
+    } catch (error) {
+        console.log("Error fetching user's recommended books:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+})
+
 export default router;
