@@ -1,9 +1,10 @@
-import { View, Text, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import React from 'react'
 import styles from '../../assets/styles/signup.styles'
 import { Ionicons } from '@expo/vector-icons'
 import COLORS from '@/constants/colors'
 import { useRouter } from 'expo-router'
+import { useAuthStore } from '@/store/authStore'
 
 export default function Signup() {
 
@@ -11,12 +12,20 @@ export default function Signup() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
 
   const router = useRouter();
 
-  const handleSignUp = () => {
+  const { user, isLoading, register } = useAuthStore() 
 
+
+
+  const handleSignUp = async () => {
+
+    const result = await register(username, email, password)
+
+    if (!result.success) {
+      Alert.alert('Registration Error', result.message || 'An error occurred during registration.');
+    }
   }
 
   return (
@@ -46,7 +55,7 @@ export default function Signup() {
                 />
                 <TextInput
                   style={styles.input}
-                  placeholder="John Doe"
+                  placeholder="johndoe"
                   placeholderTextColor={COLORS.placeholderText}
                   value={username}
                   onChangeText={setUsername}

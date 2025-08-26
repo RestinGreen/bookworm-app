@@ -16,6 +16,9 @@ app.use("/api/books", bookRoutes)
 
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
+  console.log(`Server is running on http://0.0.0.0:${PORT}`)
+  console.log(`Server accessible at:`)
+  console.log(`- Local: http://localhost:${PORT}`)
+  console.log(`- Network: http://0.0.0.0:${PORT}`)
   connectDB()
 })
