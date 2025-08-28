@@ -95,7 +95,7 @@ export default function Create() {
             setRating(3);
             setImage('');
             setImageBase64(null);
-
+            router.push('/')
         } catch (error) {
             console.log("Error submitting post:", error);
             Alert.alert("Error", error instanceof Error ? error.message : "An error occurred. Please try again.");
