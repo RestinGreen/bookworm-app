@@ -1,21 +1,25 @@
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import React from 'react'
 import styles from '../../assets/styles/login.styles'
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import COLORS from '@/constants/colors';
 import { Link } from 'expo-router';
-
+import { useAuthStore } from '@/store/authStore';
 
 const LoginScreen = () => {
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleLogin = () => {
+  const {isLoading, login} = useAuthStore()
 
+  const handleLogin = async () => {
+    const result = await login(email, password);
+    if (!result.success) {
+      Alert.alert('Login Error', result.message || 'An error occurred during login.');
+    }
   }
 
 

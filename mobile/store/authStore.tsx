@@ -1,12 +1,6 @@
 import { create } from 'zustand'
 import  AsyncStorage  from '@react-native-async-storage/async-storage'
-
-// IMPORTANT: Replace this IP with your Windows computer's network IP address
-// To find your Windows IP: Open Command Prompt and run 'ipconfig'
-// Look for "Wireless LAN adapter Wi-Fi" or "Ethernet adapter" IPv4 Address
-// Common ranges: 192.168.1.x, 192.168.0.x, 10.0.0.x
-const WINDOWS_IP = '192.168.2.68'; // ⚠️ UPDATE THIS TO YOUR WINDOWS NETWORK IP
-const BASE_URL = `http://${WINDOWS_IP}:3001`;
+import BASE_URL from '@/constants/url';
 
 type User = {
     _id: string;
@@ -25,6 +19,9 @@ type AuthStore = {
         email: string,
         password: string
     ) => Promise<{ success: boolean; message?: string }>;
+    checkAuth: () => Promise<void>;
+    logout: () => Promise<void>;
+    login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -64,4 +61,51 @@ export const useAuthStore = create<AuthStore>((set) => ({
             set({ isLoading: false });
         }
     },
+
+    checkAuth: async() => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const userJson = await AsyncStorage.getItem('user');
+            const user = userJson ? JSON.parse(userJson) : null;
+
+            set({ token, user });
+        } catch (error) {
+            console.log("Error checking auth:", error);
+        }
+    },
+    logout: async() => {
+        await AsyncStorage.removeItem('user');
+        await AsyncStorage.removeItem('token');
+        set({ token: null, user: null });
+    },
+    login: async(email: string, password: string) => {
+        set({ isLoading: true });
+        try {
+            const response = await fetch(`${BASE_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            await AsyncStorage.setItem('user', JSON.stringify(data.user));
+            await AsyncStorage.setItem('token', data.jwt);
+            set({ token: data.jwt, user: data.user });
+
+            return { success: true };
+        } catch (error) {
+            console.log("Error in login:", error);
+            return { success: false, message: (error as Error).message || 'An error occurred at login.' };
+        } finally {
+            set({isLoading: false})
+        }
+
+    }
+
 }));
