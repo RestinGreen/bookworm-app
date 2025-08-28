@@ -7,6 +7,7 @@ type User = {
     username: string;
     email: string;
     profileImage: string;
+    createdAt: string;
     // add other user fields as needed
 };
 

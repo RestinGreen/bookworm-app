@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import COLORS from '@/constants/colors';
 import { formatPublishDate } from '@/lib/utils';
 import Loader from '@/components/Loader';
+import { Book } from '@/models/Book';
 
 
 
@@ -73,7 +74,7 @@ export default function Home() {
 
     } finally {
       if (refresh) {
-        
+
         setRefreshing(false)
       } else {
         setLoading(false)
@@ -88,18 +89,7 @@ export default function Home() {
     }
   }
 
-  type Book = {
-    _id: string;
-    title: string;
-    caption: string;
-    rating: number;
-    createdAt: string;
-    user: {
-      profileImage: string;
-      username: string;
-    };
-    image: string;
-  };
+
 
 
   const renderRatingStars = (rating: number) => {
