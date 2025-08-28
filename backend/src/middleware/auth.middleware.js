@@ -17,14 +17,14 @@ const protectRoute = async (req, res, next) => {
         const token = authHeader.replace("Bearer ", "");
 
         //get token
-        if (!token || token.trim() === "") {
+        if (!token || token.trim() === "" || token === "null") {
             return res.status(401).json({ message: "No token, authorization denied" });
         }
 
         // Check if token looks like a JWT (3 parts separated by dots)
         const tokenParts = token.split('.');
         if (tokenParts.length !== 3) {
-            console.log('token is in wrong format: ', tokenParts);
+            console.log('Token is in wrong format:', tokenParts);
             return res.status(401).json({ message: "Malformed token format" });
         }
 
